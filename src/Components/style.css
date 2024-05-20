@@ -1,3 +1,44 @@
-.btn-next:hover{
+.btn-next:hover {
     background-color: rgb(92, 171, 92);
+}
+
+/* App.css */
+
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f2f5;
+}
+
+.MuiButton-containedPrimary {
+    background-color: #1976d2;
+    color: #fff;
+    text-transform: none;
+}
+
+.MuiButton-containedPrimary:hover {
+    background-color: #115293;
+}
+
+.MuiTypography-h5 {
+    font-weight: bold;
+}
+
+.MuiListItemText-primary {
+    font-size: 1rem;
+}
+
+.MuiListItem {
+    background-color: #fff;
+    margin-bottom: 8px;
+    border-radius: 4px;
+}
+
+.MuiListItem:last-child {
+    margin-bottom: 0;
+}
+
+.MuiIconButton-root {
+    padding: 0;
 }

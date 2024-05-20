@@ -29,16 +29,20 @@ const fetchHistoricalData = async (language, type, month, day) => {
     }
 };
 
-const formatDate = (productionDate) => {
-    if (!productionDate) return '';
-    const dt = dayjs(productionDate);
-    const dtm = dt.month() + 1;
-    const dty = dt.year();
-    return `${dtm}/${dty}`;
+const formatMonthDay = (month, day) => {
+    const date = dayjs().month(month - 1).date(day);
+    return date.format('MMMM D');
+};
+
+const formatMonthYear = (date) => {
+    if (!date) return '';
+    const dt = dayjs(date);
+    const month = dt.month() + 1;
+    const year = dt.year();
+    return `${month}/${year}`;
 };
 
 const BasicDatePicker = () => {
-    const [displayDate, setDisplayDate] = useState('');
     const [selectedDate, setSelectedDate] = useState(null);
     const [birthdays, setBirthdays] = useState([]);
     const [favoriteBirthdays, setFavoriteBirthdays] = useState([]);
@@ -60,7 +64,9 @@ const BasicDatePicker = () => {
     };
 
     const addToFavorites = (birthday) => {
-        setFavoriteBirthdays([...favoriteBirthdays, birthday]);
+        const month = selectedDate.month() + 1;
+        const day = selectedDate.date();
+        setFavoriteBirthdays([...favoriteBirthdays, { ...birthday, month, day }]);
     };
 
     const removeFromFavorites = (birthday) => {
@@ -86,13 +92,10 @@ const BasicDatePicker = () => {
         if (fetchedData && fetchedData.births.length > 0) {
             setBirthdays(fetchedData.births);
             setSelectedDate(nextDate);
-            setDisplayDate(formatDate(nextDate)); // Set the new heading dynamically
         } else {
-            // If no upcoming birthdays found, keep the selected date unchanged
             console.log('No upcoming birthdays found for the next date.');
         }
     };
-
 
     return (
         <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -121,19 +124,16 @@ const BasicDatePicker = () => {
                         sx={{ mb: 2 }}
                     />
                     <Typography variant="h5" gutterBottom>
-                        <span role="img" aria-label="birthday">🎂</span> Birthdays on {formatDate(selectedDate)}
+                        <span role="img" aria-label="birthday">🎂</span> Birthdays on {formatMonthYear(selectedDate)}
                     </Typography>
                     <Button className='btn-next' onClick={handleNextBirthdayClick} variant="contained" color="primary" sx={{
                         mt: 2,
                         "&:hover": {
                             backgroundColor: "green",
                         },
-                    }}  >
+                    }}>
                         Next Birthday
                     </Button>
-                    {/* <Typography variant="h5" gutterBottom>
-                        Birthdays on {displayDate}
-                    </Typography> */}
                     <List>
                         {filteredBirthdays.map((birthday, index) => (
                             <ListItem key={index} sx={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -151,16 +151,30 @@ const BasicDatePicker = () => {
                     <Typography variant="h5" gutterBottom>
                         <span role="img" aria-label="favorite">⭐</span> Favorite Birthdays
                     </Typography>
-
                     <List>
                         {favoriteBirthdays.map((birthday, index) => (
-                            <ListItem key={index}>
-                                <ListItemText primary={`${birthday.text} - ${birthday.year}`} />
+                            <ListItem key={index} sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <ListItemText
+                                    primary={
+                                        <>
+                                            <Typography variant="body2" color="textSecondary" sx={{ fontWeight: 'bold' }}>
+                                                {formatMonthDay(birthday.month, birthday.day)}
+                                            </Typography>
+                                            <Typography variant="body1">
+                                                {`${birthday.text} - ${birthday.year}`}
+                                            </Typography>
+                                        </>
+                                    }
+                                />
+                                <IconButton
+                                    onClick={() => removeFromFavorites(birthday)}
+                                >
+                                    <StarIcon color="primary" />
+                                </IconButton>
                             </ListItem>
                         ))}
                     </List>
                 </Box>
-
             </Box>
         </LocalizationProvider>
     );
