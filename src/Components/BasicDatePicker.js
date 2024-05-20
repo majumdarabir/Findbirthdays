@@ -37,9 +37,10 @@ const formatMonthDay = (month, day) => {
 const formatMonthYear = (date) => {
     if (!date) return '';
     const dt = dayjs(date);
-    const month = dt.month() + 1;
+    const month = dt.month() + 1; // months are zero-indexed in dayjs, so add 1
+    const day = dt.date();
     const year = dt.year();
-    return `${month}/${year}`;
+    return formatMonthDay(month,day)
 };
 
 const BasicDatePicker = () => {
@@ -137,12 +138,13 @@ const BasicDatePicker = () => {
                     <List>
                         {filteredBirthdays.map((birthday, index) => (
                             <ListItem key={index} sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                                <ListItemText primary={`${birthday.text} - ${birthday.year}`} />
+
                                 <IconButton
                                     onClick={() => (isFavorite(birthday) ? removeFromFavorites(birthday) : addToFavorites(birthday))}
                                 >
                                     {isFavorite(birthday) ? <StarIcon color="primary" /> : <StarBorderIcon />}
                                 </IconButton>
+                                <ListItemText primary={`${birthday.text} - ${birthday.year}`} />
                             </ListItem>
                         ))}
                     </List>
@@ -154,6 +156,12 @@ const BasicDatePicker = () => {
                     <List>
                         {favoriteBirthdays.map((birthday, index) => (
                             <ListItem key={index} sx={{ display: 'flex', justifyContent: 'space-between' }}>
+
+                                <IconButton
+                                    onClick={() => removeFromFavorites(birthday)}
+                                >
+                                    <StarIcon color="primary" />
+                                </IconButton>
                                 <ListItemText
                                     primary={
                                         <>
@@ -166,11 +174,6 @@ const BasicDatePicker = () => {
                                         </>
                                     }
                                 />
-                                <IconButton
-                                    onClick={() => removeFromFavorites(birthday)}
-                                >
-                                    <StarIcon color="primary" />
-                                </IconButton>
                             </ListItem>
                         ))}
                     </List>
